@@ -44,7 +44,9 @@ __Подзадачи:__
     git clone https://github.com/1ordhokage/api_task.git
 Из корневой папки проекта:
 
-    docker-compose -f docker-compose.yml up --build -d
+    docker compose -f docker-compose.yml up --build -d
+    
+Windows:
 
 Swagger: `http://0.0.0.0:8000/docs`
 
@@ -154,12 +156,16 @@ P.S. Сборка под Linux и MacOS.
     ```HTTP
     PUT http://127.0.0.1:8000/api/rates
     ```
+    <img width="1421" alt="put_rates" src="https://github.com/1ordhokage/currency_service/assets/61906886/4866b437-3da2-47b7-a283-71bd5e89be2e">
+
+    
 2) Выдача даты и времени последнего обновления курсов в БД.
 
     ```HTTP
     GET http://127.0.0.1:8000/api/last-updated
     ```
-    
+    <img width="1421" alt="Снимок экрана 2023-10-25 в 20 58 06" src="https://github.com/1ordhokage/currency_service/assets/61906886/1c1bda9b-a8b2-4860-869e-fccb8a98fae9">
+
     Пример тела ответа:
 
     ```JSON
@@ -171,7 +177,8 @@ P.S. Сборка под Linux и MacOS.
 
 
 3) Конвертация между валютами.
-    
+   
+
     ```HTTP
     POST http://127.0.0.1:8000/api/convert
     ```
@@ -184,6 +191,7 @@ P.S. Сборка под Linux и MacOS.
     }
     ```
 
+  
     Пример тела ответа:
 
     ```JSON
@@ -195,3 +203,5 @@ P.S. Сборка под Linux и MacOS.
         "date_time": "2023-10-25T18:02:15.354984"
     }
     ```
+    
+   <img width="711" alt="Снимок экрана 2023-10-25 в 21 02 38" src="https://github.com/1ordhokage/currency_service/assets/61906886/c6a39727-966f-4dd7-9cd5-83743a316b73">
