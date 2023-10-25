@@ -108,22 +108,22 @@ Swagger: `http://0.0.0.0:8000/docs`
 
 
         async def get_currencies() -> list[dict[str, str | float]]:
-        """Gets lsit of currencies. Uses get_from_api() to transform data.
-        Returns:
-            list[dict[str, str | float]]: list of currencies.
-        """
-        symbols = await get_from_api(OptionsToGetEnum.SYMBOLS)
-        rates = await get_from_api(OptionsToGetEnum.RATES)
-        currencies = [
-            {
-                "code": code,
-                "name": name,
-                "rate": rates.get(code)
-            }
-            for code, name in symbols.items()
-            if rates.get(code)
-        ]
-        return currencies
+            """Gets lsit of currencies. Uses get_from_api() to transform data.
+            Returns:
+                list[dict[str, str | float]]: list of currencies.
+            """
+            symbols = await get_from_api(OptionsToGetEnum.SYMBOLS)
+            rates = await get_from_api(OptionsToGetEnum.RATES)
+            currencies = [
+                {
+                    "code": code,
+                    "name": name,
+                    "rate": rates.get(code)
+                }
+                for code, name in symbols.items()
+                if rates.get(code)
+            ]
+            return currencies
         ```
         
 
