@@ -1,5 +1,8 @@
 from enum import Enum
-from httpx import AsyncClient
+
+from httpx import AsyncClient, HTTPError
+
+from fastapi import HTTPException, status
 
 from src.utils.config import external_api_settings
 
@@ -14,6 +17,8 @@ async def get_from_api(option: OptionsToGetEnum) -> dict[str, str | float]:
     """Gets data from the external API. Uses access_key.
     Args:
         option (OptionsToGetEnum): Current variants shown in OptionsToGetEnum.
+    Raises:
+        HTTPException: HTTP_503_SERVICE_UNAVAILABLE.
     Returns:
         dict[str, str | float]: result, depends on the chosen option.
     """
@@ -24,12 +29,18 @@ async def get_from_api(option: OptionsToGetEnum) -> dict[str, str | float]:
     params = {
         "access_key": external_api_settings.KEY
     }
-    async with AsyncClient() as client:
-        result = await client.get(
-            source_url.get(option),
-            params=params
+    try:
+        async with AsyncClient() as client:
+            result = await client.get(
+                source_url.get(option),
+                params=params
+            )
+            return result.json().get(option.value)
+    except HTTPError:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail="Currency API is temporary unavailable"
         )
-        return result.json().get(option.value)
     
 
 async def get_currencies() -> list[dict[str, str | float]]:
