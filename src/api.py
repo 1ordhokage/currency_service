@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 
 from src.service import CurrenciesService
 from src.schemas.convert import ConvertSchema, ConvertResponseSchema
@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.put("/rates")
+@router.put("/rates", status_code=status.HTTP_204_NO_CONTENT)
 async def update_rates(service: CurrenciesService = Depends()) -> None:
     """Endpoint for updating rates from the external API.
     Args:
