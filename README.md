@@ -46,11 +46,8 @@ __Подзадачи:__
 
     docker compose -f docker-compose.yml up --build -d
     
-Windows:
 
 Swagger: `http://0.0.0.0:8000/docs`
-
-P.S. Сборка под Linux и MacOS.
 
 
 ## Особенности реализации
