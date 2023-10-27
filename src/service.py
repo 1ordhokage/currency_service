@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException, status
 
 from sqlalchemy import insert, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -61,11 +61,18 @@ class CurrenciesService:
         Returns:
             float: Current rate.
         """
-        currency = await self.session.execute(
-            select(Currency)
-            .where(Currency.code == code)
-        )
-        return currency.scalar().rate
+        try:
+            currency = await self.session.execute(
+                select(Currency)
+                .where(Currency.code == code)
+            )
+            return currency.scalar().rate
+        except AttributeError:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Currency not found"
+            )
+        
     
     async def convert(self, schema: ConvertSchema) -> float:
         """Converts currencies by given currency codes and amount.
