@@ -6,9 +6,9 @@ services:
       - pgdbdata:/var/lib/postgresql/data/
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 3s
+      interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 3
     env_file:
       - .env
     ports:

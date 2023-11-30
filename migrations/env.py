@@ -13,7 +13,7 @@ from alembic import context
 
 
 sys.path.append(os.path.join(sys.path[0], "src"))
-from src.models import base, currencies, update_date_time
+from src.models import base, currencies, update_date_time, users
 from src.database.config import db_settings
 
 # this is the Alembic Config object, which provides

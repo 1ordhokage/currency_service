@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 
-from src.api import router
+from src.api.auth import router as auth_router
+from src.api.currencies import router as currencies_router
+from src.api.users import router as users_router
 from src.utils.external_api import get_currencies
 from src.utils.start_up import StartUp
 
@@ -10,7 +12,9 @@ app = FastAPI(
     version="0.0.1"
 )
 
-app.include_router(router)
+app.include_router(auth_router)
+app.include_router(currencies_router)
+app.include_router(users_router)
 
 
 @app.on_event("startup")
