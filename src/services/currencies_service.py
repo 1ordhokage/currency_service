@@ -16,6 +16,18 @@ class CurrenciesService:
     def __init__(self, session: AsyncSession = Depends(get_async_session)):
         self.session = session
     
+    async def get_currencies(self) -> list[Currency]:
+        result = await self.session.execute(
+            select(Currency)
+        )
+        currencies = result.scalars()
+        if not currencies:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="Currencies not found"
+            )
+        return currencies
+        
     async def get_update_date_time(self) -> UpdateDateTime:
         result = await self.session.execute(
             select(UpdateDateTime)

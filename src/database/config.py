@@ -10,10 +10,6 @@ class DBSettings(BaseSettings):
 
     @property
     def connection_string(self) -> str:
-        """Generates DB connection string.
-        Returns:
-            str: DB connnection string.
-        """
         data = f"{self.USER}:{self.PASS}@{self.HOST}:{self.PORT}/{self.NAME}"
         return f"postgresql+asyncpg://{data}"
     
