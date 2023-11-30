@@ -1,4 +1,4 @@
-from pydantic import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class SMTPSettings(BaseSettings):
@@ -8,7 +8,7 @@ class SMTPSettings(BaseSettings):
     PORT: int
 
     model_config = SettingsConfigDict(
-        env_prefix="JWT_",
+        env_prefix="SMTP_",
         env_file=".env"
     )
 

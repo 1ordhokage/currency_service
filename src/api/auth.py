@@ -4,6 +4,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from src.schemas.token import TokenSchema
 from src.schemas.user import UserRequestSchema, UserResponseSchema
 from src.services.auth_service import AuthService
+from src.tasks.tasks import send_welcome_email
 
 
 router = APIRouter(
@@ -19,6 +20,7 @@ router = APIRouter(
 )
 async def register(schema: UserRequestSchema, service: AuthService = Depends()):
     user = await service.create_user(schema)
+    send_welcome_email.delay(schema.email)
     return user
 
 
