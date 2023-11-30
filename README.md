@@ -12,10 +12,9 @@
 - Pydantic 
 - httpx 
 
-Внешний API: https://exchangeratesapi.io
 
 ## Сборка и запуск проекта:
-    git clone https://github.com/1ordhokage/api_task.git
+    git clone https://github.com/1ordhokage/currency_service.git
 Из корневой папки проекта:
 
     docker compose up -d
@@ -61,6 +60,12 @@ Flower: `http://0.0.0.0:8888`
         return user
 
     ```
+
+
+    
+<img width="634" alt="Снимок экрана 2023-11-30 в 21 09 25" src="https://github.com/1ordhokage/currency_service/assets/61906886/88285f87-2d37-41f9-a7fa-29af90eef76e">
+
+    
 
 3) __Оптимизация производительности__
 
@@ -137,32 +142,189 @@ Flower: `http://0.0.0.0:8888`
 
 ## API:
 
-1) Обновление курсов валют в БД на актуальные курсы.
+1) __Регистрация__:
 
- 
+    ```
+    curl -X 'POST' \
+      'http://127.0.0.1:8000/auth/register' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json' \
+      -d '{
+      "email": "example@example.com",
+      "text_password": "12345678",
+      "role": "admin"
+    }'
+    ```
+    Ответ:
 
-    
-2) Выдача даты и времени последнего обновления курсов в БД.
-
-   
-
-
-
-3) Конвертация между валютами.
-   
-
-   
-
-  
-    Пример тела ответа:
-
+    201
     ```JSON
     {
-        "original_code": "RUB",
-        "target_code": "USD",
-        "amount": 123000.76,
-        "result": 1308.52,
-        "date_time": "2023-10-25T18:02:15.354984"
+      "id": 5,
+      "email": "example@example.com",
+      "role": "admin"
     }
     ```
+
+    
+2) __Аутентификация__:
+   
+    ```
+    curl -X 'POST' \
+      'http://127.0.0.1:8000/auth/token' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/x-www-form-urlencoded' \
+      -d 'grant_type=&username=example%40example.com&password=12345678&scope=&client_id=&client_secret='
+    ```
+    Ответ:
+
+    200
+    ```JSON
+    {
+      "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDEzNjgxNDMsImV4cCI6MTcwMTM3MTc0Mywic3ViIjoiNSIsInJvbGUiOiJhZG1pbiJ9.ui9xT-c2U_DM-cIZDjWZyvKdyheiUc-DHtueNEMxk44",
+      "token_type": "bearer"
+    }
+    ```
+   
+
+
+
+3) __Получение списка всех валют (курс к евро)__:
+   
+    ```
+    curl -X 'GET' \
+      'http://127.0.0.1:8000/currencies' \
+      -H 'accept: application/json' \
+      -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDEzNjgyMzAsImV4cCI6MTcwMTM3MTgzMCwic3ViIjoiNSIsInJvbGUiOiJhZG1pbiJ9.4zeQZDhiSB0_SYRhPe8cOG95LnHDbbqYGicvm7uOkMI'
+    ```
+    Ответ:
+
+    200
+    ```JSON
+    [
+      {
+        "code": "AFN",
+        "name": "Afghan Afghani",
+        "rate": 75.68504333496094
+      },
+      {
+        "code": "ALL",
+        "name": "Albanian Lek",
+        "rate": 101.77205657958984
+      },
+      ...
+    ]
+    ```
+
+   
+4) __Обновить курсы валют__:
+   
+    ```
+   curl -X 'PUT' \
+      'http://127.0.0.1:8000/currencies/rates' \
+      -H 'accept: */*' \
+      -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDEzNjgyMzAsImV4cCI6MTcwMTM3MTgzMCwic3ViIjoiNSIsInJvbGUiOiJhZG1pbiJ9.4zeQZDhiSB0_SYRhPe8cOG95LnHDbbqYGicvm7uOkMI'
+    ```
+    Ответ:
+
+    204
+
+
+  
+5) __Посмотреть время последнего обновления валют__:
+   
+    ```
+   curl -X 'GET' \
+      'http://127.0.0.1:8000/currencies/last-updated' \
+      -H 'accept: application/json' \
+      -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDEzNjgyMzAsImV4cCI6MTcwMTM3MTgzMCwic3ViIjoiNSIsInJvbGUiOiJhZG1pbiJ9.4zeQZDhiSB0_SYRhPe8cOG95LnHDbbqYGicvm7uOkMI'
+
+    ```
+    Ответ:
+
+    200
+    ```JSON
+    {
+      "last_update": "2023-11-30T18:21:07.099708"
+    }
+    ```
+
+6) __Конвертировать валюты__:
+   
+    ```
+    curl -X 'POST' \
+      'http://127.0.0.1:8000/currencies/convert' \
+      -H 'accept: application/json' \
+      -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDEzNjgyMzAsImV4cCI6MTcwMTM3MTgzMCwic3ViIjoiNSIsInJvbGUiOiJhZG1pbiJ9.4zeQZDhiSB0_SYRhPe8cOG95LnHDbbqYGicvm7uOkMI' \
+      -H 'Content-Type: application/json' \
+      -d '{
+      "original_code": "USD",
+      "target_code": "RUB",
+      "amount": 128750
+    }'
+    ```
+    Ответ:
+
+    200
+    ```JSON
+    {
+      "original_code": "USD",
+      "target_code": "RUB",
+      "amount": 128750,
+      "result": 11584282.88,
+      "date_time": "2023-11-30T18:25:21.917362"
+    }
+    ```
+
+7) __Получить свои данные__:
+   
+    ```
+    curl -X 'GET' \
+      'http://127.0.0.1:8000/users/me' \
+      -H 'accept: application/json' \
+      -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDEzNjgyMzAsImV4cCI6MTcwMTM3MTgzMCwic3ViIjoiNSIsInJvbGUiOiJhZG1pbiJ9.4zeQZDhiSB0_SYRhPe8cOG95LnHDbbqYGicvm7uOkMI'
+    ```
+    Ответ:
+
+    200
+    ```JSON
+    {
+      "id": 5,
+      "email": "example@example.com",
+      "role": "admin"
+    }
+    ```
+
+8) __Обновить свои данные__:
+   
+    ```
+    curl -X 'PUT' \
+      'http://127.0.0.1:8000/users/me' \
+      -H 'accept: */*' \
+      -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDEzNjgyMzAsImV4cCI6MTcwMTM3MTgzMCwic3ViIjoiNSIsInJvbGUiOiJhZG1pbiJ9.4zeQZDhiSB0_SYRhPe8cOG95LnHDbbqYGicvm7uOkMI' \
+      -H 'Content-Type: application/json' \
+      -d '{
+      "email": "new@mail.com",
+      "text_password": "11111111"
+    }'
+    ```
+    Ответ:
+
+    204
+
+
+9) __Удалить свои данные__:
+   
+    ```
+    curl -X 'DELETE' \
+      'http://127.0.0.1:8000/users/me' \
+      -H 'accept: */*' \
+      -H 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDEzNjgyMzAsImV4cCI6MTcwMTM3MTgzMCwic3ViIjoiNSIsInJvbGUiOiJhZG1pbiJ9.4zeQZDhiSB0_SYRhPe8cOG95LnHDbbqYGicvm7uOkMI'
+    ```
+    Ответ:
+
+    204
+
+
+   
     
