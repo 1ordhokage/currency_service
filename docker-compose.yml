@@ -1,3 +1,5 @@
+version: '3'
+
 services:
   db:
     container_name: db
@@ -16,12 +18,12 @@ services:
 
   redis:
     image: redis:7
-    container_name: redis_app
+    container_name: redis
     command: --port 5370
     expose:
       - 5370
 
-  app:
+  fastapi-app:
     build:
       context: .
     container_name: fastapi-app
@@ -29,15 +31,16 @@ services:
       - .env
     ports:
       - 8000:8000
-    command: sh -c "alembic upgrade head && uvicorn src.main:app --host=0.0.0.0 --port=8000"
+    command: ["/python_app/docker/app.sh"]
     depends_on:
-      - db
-      - redis
+      db:
+        condition: service_healthy
+
   
   celery:
     build:
       context: .
-    container_name: celery_app
+    container_name: celery
     env_file:
       - .env
     command: ["/python_app/docker/celery.sh", "celery"]
@@ -47,7 +50,7 @@ services:
   flower:
     build:
       context: .
-    container_name: flower_app
+    container_name: flower
     env_file:
       - .env
     command: ["/python_app/docker/celery.sh", "flower"]

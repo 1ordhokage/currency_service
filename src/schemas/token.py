@@ -12,3 +12,4 @@ class TokenPayloadSchema(BaseModel):
     iat: datetime
     exp: datetime
     sub: str
+    role: str

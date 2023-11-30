@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.database.database import get_async_session
 from src.models.users import User
 from src.schemas.token import TokenPayloadSchema, TokenSchema
-from src.schemas.user import UserRequestSchema
+from src.schemas.user import UserCreateSchema, UserUpdateSchema
 from src.token.config import jwt_settings
 from src.token.token import Token
 
@@ -37,10 +37,11 @@ class AuthService:
             )
         return user
     
-    async def create_user(self, schema: UserRequestSchema) -> User:
+    async def create_user(self, schema: UserCreateSchema) -> User:
         user = User(
             email=schema.email,
             password_hashed=Token.get_password_hash(schema.text_password),
+            role=schema.role.value
         )
         try:
             self.session.add(user)
@@ -68,10 +69,11 @@ class AuthService:
             iat=now,
             exp=now + timedelta(minutes=jwt_settings.ACCESS_TOKEN_EXPIRE_MINUTES),
             sub=str(user.id),
+            role=user.role
         )
         return Token.create_token(payload)
 
-    async def update_user(self, id: int, schema: UserRequestSchema) -> None:
+    async def update_user(self, id: int, schema: UserUpdateSchema) -> None:
         user = await self.read_user(id)
         try:
             user.email = schema.email

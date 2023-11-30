@@ -21,14 +21,17 @@ router = APIRouter(
 
 @router.get("", response_model=list[CurrencySchema])
 @cache(expire=600)
-async def get_currencies(service: CurrenciesService = Depends()):
+async def get_currencies(
+    _: TokenPayloadSchema = Depends(Token.verify_token),
+    service: CurrenciesService = Depends()
+):
     currencies = await service.get_currencies()
     return currencies
 
 
 @router.put("/rates", status_code=status.HTTP_204_NO_CONTENT)
 async def update_rates(
-    _: TokenPayloadSchema = Depends(Token.verify_token),
+    _: TokenPayloadSchema = Depends(Token.verify_admin),
     service: CurrenciesService = Depends()
 ):
     await service.update_rates()
@@ -36,7 +39,7 @@ async def update_rates(
 
 @router.get("/last-updated", response_model=UpdateDateTimeSchema)
 async def get_last_updated(
-    _: TokenPayloadSchema = Depends(Token.verify_token),
+    _: TokenPayloadSchema = Depends(Token.verify_admin),
     service: CurrenciesService = Depends()
 ):
     last_updated = await service.get_update_date_time()

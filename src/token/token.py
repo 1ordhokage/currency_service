@@ -6,6 +6,7 @@ from passlib.context import CryptContext
 
 from src.schemas.token import TokenPayloadSchema, TokenSchema
 from src.token.config import jwt_settings
+from src.utils.roles import RoleEnum
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/token")
@@ -52,3 +53,14 @@ class Token:
                 headers={"WWW-Authenticate": "Bearer"},
             )
         return TokenPayloadSchema.model_validate(payload)
+
+    @staticmethod
+    def verify_admin(
+        token_payload: TokenPayloadSchema = Depends(verify_token)
+    ) -> TokenPayloadSchema:
+        if token_payload.role != RoleEnum.ADMIN.value:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="You are not an admin"
+            )
+        return token_payload

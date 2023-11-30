@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
 
 from src.schemas.token import TokenPayloadSchema
-from src.schemas.user import UserRequestSchema, UserResponseSchema
+from src.schemas.user import UserUpdateSchema, UserResponseSchema
 from src.services.auth_service import AuthService
 from src.token.token import Token
 
@@ -23,7 +23,7 @@ async def get_user(
 
 @router.put("/me", status_code=status.HTTP_204_NO_CONTENT)
 async def update_user(
-    schema: UserRequestSchema,
+    schema: UserUpdateSchema,
     user_info: TokenPayloadSchema = Depends(Token.verify_token),
     service: AuthService = Depends(),
     
